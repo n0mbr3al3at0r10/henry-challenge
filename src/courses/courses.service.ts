@@ -1,26 +1,40 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Request } from 'express';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { Course, CourseDocument } from './schemas/course.schema';
 
 @Injectable()
 export class CoursesService {
-  create(createCourseDto: CreateCourseDto) {
-    return 'This action adds a new course';
+  constructor(
+    @InjectModel(Course.name)
+    private readonly courseModel: Model<CourseDocument>,
+  ) {}
+
+  async create(createCourseDto: CreateCourseDto): Promise<Course> {
+    return this.courseModel.create(createCourseDto);
   }
 
-  findAll() {
-    return `This action returns all courses`;
+  async findAll(request: Request): Promise<Course[]> {
+    return this.courseModel
+      .find(request.query)
+      .setOptions({ sanitizeFilter: true })
+      .exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findOne(id: string): Promise<Course> {
+    return this.courseModel.findOne({ _id: id }).exec();
   }
 
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`;
+  async update(id: string, updateCourseDto: UpdateCourseDto): Promise<Course> {
+    return this.courseModel.findOneAndUpdate({ _id: id }, updateCourseDto, {
+      new: true,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} course`;
+  async remove(id: string) {
+    return this.courseModel.findByIdAndRemove({ _id: id }).exec();
   }
 }
