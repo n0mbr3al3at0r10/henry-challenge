@@ -36,4 +36,18 @@ export class UsersService {
   async remove(id: string) {
     return this.userModel.findByIdAndRemove({ _id: id }).exec();
   }
+
+  async addStudent(id: string, student: any) {
+    const user: UserDocument = await this.userModel.findById(id);
+    user.student = student;
+    user.save();
+    return user;
+  }
+
+  async addTeacher(id: string, teacher: any) {
+    const user: UserDocument = await this.userModel.findById(id);
+    user.teacher = teacher;
+    user.save();
+    return user;
+  }
 }
