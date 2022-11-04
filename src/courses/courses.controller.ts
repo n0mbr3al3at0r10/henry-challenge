@@ -12,7 +12,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { ParseObjectIdPipe } from 'src/utilities/parse-object-id-pipe.pipe';
 import { CoursesService } from './courses.service';
+import { CreateChapterDto } from './dto/create-chapter.dto';
 import { CreateCourseDto } from './dto/create-course.dto';
+import { CreateRankingDto } from './dto/create-ranking.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
 @Controller('courses')
@@ -46,5 +48,29 @@ export class CoursesController {
   @Delete(':id')
   remove(@Param('id', ParseObjectIdPipe) id: string) {
     return this.coursesService.remove(id);
+  }
+
+  @Post(':id/teacher/:teacherId')
+  async addTeacher(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Param('teacherId', ParseObjectIdPipe) teacher: string,
+  ) {
+    return this.coursesService.addTeacher(id, teacher);
+  }
+
+  @Post(':id/chapter')
+  async addChapter(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() chapter: CreateChapterDto,
+  ) {
+    return this.coursesService.addChapter(id, chapter);
+  }
+
+  @Post(':id/ranking')
+  async addRanking(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() ranking: CreateRankingDto,
+  ) {
+    return this.coursesService.addRanking(id, ranking);
   }
 }
