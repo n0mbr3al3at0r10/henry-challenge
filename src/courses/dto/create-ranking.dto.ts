@@ -7,7 +7,7 @@ export class CreateRankingDto {
   readonly userId: User;
 
   @ApiProperty({
-    example: 'Intro',
+    example: 5,
   })
-  readonly score: string;
+  readonly score: number;
 }
