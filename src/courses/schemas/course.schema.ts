@@ -1,5 +1,8 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import { User } from 'src/users/schemas/user.schema';
+import { Chapter, ChapterSchema } from './chapter.schema';
+import { Ranking, RankingSchema } from './ranking.schema';
 
 export type CourseDocument = Course & Document;
 
@@ -19,6 +22,15 @@ export class Course {
 
   @Prop([String])
   keywords: string[];
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  teacherId: User;
+
+  @Prop([ChapterSchema])
+  chapters: Chapter[];
+
+  @Prop([RankingSchema])
+  rankings: Ranking[];
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);
