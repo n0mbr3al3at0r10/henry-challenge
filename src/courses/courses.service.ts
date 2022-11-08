@@ -50,11 +50,11 @@ export class CoursesService {
     return this.courseModel.findByIdAndRemove({ _id: id }).exec();
   }
 
-  async addTeacher(id: string, teacherId: User) {
+  async assignTeacher(id: string, teacherId: User) {
     const course: CourseDocument = await this.courseModel.findById(id);
     course.teacherId = teacherId;
     course.save();
-    return course;
+    return course.populate({ path: 'teacherId' }); // matches with userId in User and displays its details.
   }
 
   async addChapter(id: string, chapter: CreateChapterDto) {

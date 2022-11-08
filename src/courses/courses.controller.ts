@@ -56,7 +56,7 @@ export class CoursesController {
     @Param('id', ParseObjectIdPipe) id: string,
     @Param('teacherId', ParseObjectIdPipe) teacher: User,
   ) {
-    return this.coursesService.addTeacher(id, teacher);
+    return this.coursesService.assignTeacher(id, teacher);
   }
 
   @Post(':id/chapter')
