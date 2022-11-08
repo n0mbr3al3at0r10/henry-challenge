@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Request } from 'express';
@@ -6,7 +6,6 @@ import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course, CourseDocument } from './schemas/course.schema';
 import { User } from 'src/users/schemas/user.schema';
-import { UsersService } from 'src/users/users.service';
 import { CreateChapterDto } from './dto/create-chapter.dto';
 import { CreateRankingDto } from './dto/create-ranking.dto';
 
@@ -17,12 +16,8 @@ export class CoursesService {
     private readonly courseModel: Model<CourseDocument>,
   ) {}
 
-  // Injecting usersService so I can look for the teacher and add it to the course.
-  @Inject(UsersService)
-  private readonly usersService: UsersService;
-
-  async create(createCourseDto: CreateCourseDto): Promise<Course> {
-    return this.courseModel.create(createCourseDto);
+  async create(course: CreateCourseDto): Promise<Course> {
+    return this.courseModel.create(course);
   }
 
   async findAll(request: Request): Promise<Course[]> {
