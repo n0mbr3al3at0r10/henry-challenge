@@ -64,6 +64,19 @@ export class CoursesService {
     return course;
   }
 
+  async updateChapter(
+    id: string,
+    chapterId: string,
+    chapter: CreateChapterDto,
+  ): Promise<Course> {
+    // Updating a subdocument generates a new id, so passing old id to have consistency.
+    return this.courseModel.findOneAndUpdate(
+      { _id: id, 'chapters._id': chapterId },
+      { $set: { 'chapters.$': { _id: chapterId, ...chapter } } },
+      { new: true },
+    );
+  }
+
   async addRanking(id: string, ranking: CreateRankingDto) {
     const course: CourseDocument = await this.courseModel.findById(id);
     course.rankings.push(ranking);

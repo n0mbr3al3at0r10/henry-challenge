@@ -67,6 +67,15 @@ export class CoursesController {
     return this.coursesService.addChapter(id, chapter);
   }
 
+  @Patch(':id/chapter/:chapterId')
+  async updateChapter(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Param('chapterId', ParseObjectIdPipe) chapterId: string,
+    @Body() chapter: CreateChapterDto,
+  ) {
+    return this.coursesService.updateChapter(id, chapterId, chapter);
+  }
+
   @Post(':id/ranking')
   async addRanking(
     @Param('id', ParseObjectIdPipe) id: string,
