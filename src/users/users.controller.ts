@@ -16,6 +16,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
+import { Course } from 'src/courses/schemas/course.schema';
 
 @Controller('users')
 @ApiTags('user')
@@ -69,7 +70,7 @@ export class UsersController {
   @Post(':id/startCourse/:courseId')
   async addStartedCourse(
     @Param('id', ParseObjectIdPipe) id: string,
-    @Param('courseId', ParseObjectIdPipe) courseId: string,
+    @Param('courseId', ParseObjectIdPipe) courseId: Course,
   ) {
     return this.usersService.addStartedCourse(id, courseId);
   }
@@ -77,7 +78,7 @@ export class UsersController {
   @Post(':id/completeCourse/:courseId')
   async completeStartedCourse(
     @Param('id', ParseObjectIdPipe) id: string,
-    @Param('courseId', ParseObjectIdPipe) courseId: string,
+    @Param('courseId', ParseObjectIdPipe) courseId: Course,
   ) {
     return this.usersService.completeStartedCourse(id, courseId);
   }

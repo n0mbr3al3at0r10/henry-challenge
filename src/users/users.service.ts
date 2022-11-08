@@ -6,6 +6,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { Request } from 'express';
 import { Student } from './schemas/student.schema';
+import { CreateStudentDto } from './dto/create-student.dto';
+import { CreateTeacherDto } from './dto/create-teacher.dto';
+import { Course } from 'src/courses/schemas/course.schema';
 
 @Injectable()
 export class UsersService {
@@ -38,21 +41,21 @@ export class UsersService {
     return this.userModel.findByIdAndRemove({ _id: id }).exec();
   }
 
-  async addStudentDetails(id: string, student: any) {
+  async addStudentDetails(id: string, student: CreateStudentDto) {
     const user: UserDocument = await this.userModel.findById(id);
     user.student = student;
     user.save();
     return user;
   }
 
-  async addTeacherDetails(id: string, teacher: any) {
+  async addTeacherDetails(id: string, teacher: CreateTeacherDto) {
     const user: UserDocument = await this.userModel.findById(id);
     user.teacher = teacher;
     user.save();
     return user;
   }
 
-  async addStartedCourse(id: string, courseId: any) {
+  async addStartedCourse(id: string, courseId: Course) {
     const user: UserDocument = await this.userModel.findById(id);
     this.checkOrCreateStudent(user.student);
     this.checkOrCreateActiveCourse(user.student, courseId);
@@ -61,7 +64,7 @@ export class UsersService {
     });
   }
 
-  async completeStartedCourse(id: string, courseId: any) {
+  async completeStartedCourse(id: string, courseId: Course) {
     const user: UserDocument = await this.userModel.findById(id);
     this.checkOrCreateStudent(user.student);
     this.checkOrCompleteActiveCourse(user.student, courseId);
@@ -80,7 +83,7 @@ export class UsersService {
     student = new Student();
   }
 
-  checkOrCreateActiveCourse(student: Student, courseId: any) {
+  checkOrCreateActiveCourse(student: Student, courseId: Course) {
     // Validations.
     if (student.activeCourseIds.includes(courseId)) {
       return;
@@ -94,7 +97,7 @@ export class UsersService {
     student.activeCourseIds.push(courseId);
   }
 
-  checkOrCompleteActiveCourse(student: Student, courseId: any) {
+  checkOrCompleteActiveCourse(student: Student, courseId: Course) {
     // Validations.
     if (!student.activeCourseIds.includes(courseId)) {
       return;

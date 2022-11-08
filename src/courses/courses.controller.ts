@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
+import { User } from 'src/users/schemas/user.schema';
 import { ParseObjectIdPipe } from 'src/utilities/parse-object-id-pipe.pipe';
 import { CoursesService } from './courses.service';
 import { CreateChapterDto } from './dto/create-chapter.dto';
@@ -53,7 +54,7 @@ export class CoursesController {
   @Post(':id/teacher/:teacherId')
   async addTeacher(
     @Param('id', ParseObjectIdPipe) id: string,
-    @Param('teacherId', ParseObjectIdPipe) teacher: string,
+    @Param('teacherId', ParseObjectIdPipe) teacher: User,
   ) {
     return this.coursesService.addTeacher(id, teacher);
   }

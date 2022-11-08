@@ -7,6 +7,8 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course, CourseDocument } from './schemas/course.schema';
 import { User } from 'src/users/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
+import { CreateChapterDto } from './dto/create-chapter.dto';
+import { CreateRankingDto } from './dto/create-ranking.dto';
 
 @Injectable()
 export class CoursesService {
@@ -48,22 +50,21 @@ export class CoursesService {
     return this.courseModel.findByIdAndRemove({ _id: id }).exec();
   }
 
-  async addTeacher(id: string, teacherId: string) {
+  async addTeacher(id: string, teacherId: User) {
     const course: CourseDocument = await this.courseModel.findById(id);
-    const user: User = await this.usersService.findOne(teacherId);
-    course.teacherId = user;
+    course.teacherId = teacherId;
     course.save();
     return course;
   }
 
-  async addChapter(id: string, chapter: any) {
+  async addChapter(id: string, chapter: CreateChapterDto) {
     const course: CourseDocument = await this.courseModel.findById(id);
     course.chapters.push(chapter);
     course.save();
     return course;
   }
 
-  async addRanking(id: string, ranking: any) {
+  async addRanking(id: string, ranking: CreateRankingDto) {
     const course: CourseDocument = await this.courseModel.findById(id);
     course.rankings.push(ranking);
     course.save();
