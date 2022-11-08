@@ -52,7 +52,7 @@ export class UsersController {
   }
 
   @Post(':id/student')
-  async addStudent(
+  async addStudentDetails(
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() student: CreateStudentDto,
   ) {
@@ -60,7 +60,7 @@ export class UsersController {
   }
 
   @Post(':id/teacher')
-  async addTeacher(
+  async addTeacherDetails(
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() teacher: CreateTeacherDto,
   ) {
