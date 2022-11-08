@@ -35,8 +35,8 @@ export class CoursesService {
       .exec();
   }
 
-  async update(id: string, updateCourseDto: UpdateCourseDto): Promise<Course> {
-    return this.courseModel.findOneAndUpdate({ _id: id }, updateCourseDto, {
+  async update(id: string, course: UpdateCourseDto): Promise<Course> {
+    return this.courseModel.findOneAndUpdate({ _id: id }, course, {
       new: true,
     });
   }
