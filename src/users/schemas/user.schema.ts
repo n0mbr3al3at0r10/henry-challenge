@@ -19,10 +19,10 @@ export class User {
   @Prop()
   image: string;
 
-  @Prop([StudentSchema])
+  @Prop(StudentSchema)
   student: Student;
 
-  @Prop([TeacherSchema])
+  @Prop(TeacherSchema)
   teacher: Teacher;
 }
 

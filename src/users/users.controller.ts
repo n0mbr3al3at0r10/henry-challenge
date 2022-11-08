@@ -55,7 +55,7 @@ export class UsersController {
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() student: CreateStudentDto,
   ) {
-    return this.usersService.addStudent(id, student);
+    return this.usersService.addStudentDetails(id, student);
   }
 
   @Post(':id/teacher')
@@ -63,6 +63,22 @@ export class UsersController {
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() teacher: CreateTeacherDto,
   ) {
-    return this.usersService.addTeacher(id, teacher);
+    return this.usersService.addTeacherDetails(id, teacher);
+  }
+
+  @Post(':id/startCourse/:courseId')
+  async addStartedCourse(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Param('courseId', ParseObjectIdPipe) courseId: string,
+  ) {
+    return this.usersService.addStartedCourse(id, courseId);
+  }
+
+  @Post(':id/completeCourse/:courseId')
+  async completeStartedCourse(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Param('courseId', ParseObjectIdPipe) courseId: string,
+  ) {
+    return this.usersService.completeStartedCourse(id, courseId);
   }
 }

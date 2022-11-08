@@ -6,6 +6,10 @@ export type StudentDocument = Student & Document;
 
 @Schema()
 export class Student {
+  constructor() {
+    this.activeCourseIds = [];
+    this.completedCourseIds = [];
+  }
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Course' })
   activeCourseIds: Course[];
 
