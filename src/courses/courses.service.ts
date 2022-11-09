@@ -23,7 +23,7 @@ export class CoursesService {
   async findAll(request: Request): Promise<Course[]> {
     return this.courseModel
       .find(request.query)
-      .populate({ path: 'teacherId' }) // matches with userId in User and displays its details.
+      .populate('teacherId', '-student') // matches with userId in User and displays its details.
       .setOptions({ sanitizeFilter: true })
       .exec();
   }
@@ -31,7 +31,7 @@ export class CoursesService {
   async findOne(id: string): Promise<Course> {
     return this.courseModel
       .findOne({ _id: id })
-      .populate({ path: 'teacherId' }) // matches with userId in User and displays its details.
+      .populate('teacherId', '-student') // matches with userId in User and displays its details.
       .exec();
   }
 
