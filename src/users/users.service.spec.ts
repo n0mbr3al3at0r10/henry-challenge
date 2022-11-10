@@ -10,11 +10,22 @@ import {
 import { User, UserDocument, UserSchema } from './schemas/user.schema';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RandomCourseDTOStub } from '../../test/stubs/courses.dto.stub';
+import { CoursesService } from '../courses/courses.service';
+import {
+  Course,
+  CourseDocument,
+  CourseSchema,
+} from '../courses/schemas/course.schema';
+import { CreateStudentDto } from './dto/create-student.dto';
+import { RandomTeacherDTOStub } from '../../test/stubs/teachers.dto.stub';
 
 let service: UsersService;
+let courseService: CoursesService;
 let mongod: MongoMemoryServer;
 let mongoConnection: Connection;
 let userModel: Model<User>;
+let courseModel: Model<Course>;
 
 // jest.setTimeout(10000);
 
@@ -23,14 +34,18 @@ beforeAll(async () => {
   const uri = mongod.getUri();
   mongoConnection = (await connect(uri)).connection;
   userModel = mongoConnection.model(User.name, UserSchema);
+  courseModel = mongoConnection.model(Course.name, CourseSchema);
   const module: TestingModule = await Test.createTestingModule({
     providers: [
       UsersService,
       { provide: getModelToken(User.name), useValue: userModel },
+      CoursesService,
+      { provide: getModelToken(Course.name), useValue: courseModel },
     ],
   }).compile();
 
   service = module.get<UsersService>(UsersService);
+  courseService = module.get<CoursesService>(CoursesService);
 });
 
 afterAll(async () => {
@@ -156,4 +171,72 @@ describe('CRUD', () => {
     // Assert
     expect(searchedCourses.length).toBe(users.length - 1);
   });
+});
+
+describe('StudentDetails, TeacherDetails and Courses in progress/completed', () => {
+  it('should return the user with student details', async () => {
+    // Arrange
+    const user = RandomUserDTOStub();
+
+    // Act
+    // Need to use CourseService in order to get course ids.
+    const [activeCourse, completedCourse] = await Promise.all([
+      courseService.create(RandomCourseDTOStub()) as Promise<CourseDocument>,
+      courseService.create(RandomCourseDTOStub()) as Promise<CourseDocument>,
+    ]);
+    const studentDetails: CreateStudentDto = {
+      activeCourseIds: [activeCourse._id],
+      completedCourseIds: [completedCourse._id],
+    };
+
+    const createdUser = (await service.create(user)) as UserDocument;
+    const updatedUser = await service.addStudentDetails(
+      createdUser._id,
+      studentDetails,
+    );
+    await new Promise((r) => setTimeout(r, 5)); // waiting a bit to let course.save() impact in DB.
+    const searchedUser = (await service.findOne(
+      createdUser._id,
+    )) as UserDocument;
+
+    // Assert
+    expect(updatedUser.student.activeCourseIds.length).toBe(1);
+    expect(updatedUser.student.completedCourseIds.length).toBe(1);
+    expect(updatedUser.student.activeCourseIds[0]).toStrictEqual(
+      activeCourse._id,
+    );
+    expect(updatedUser.student.completedCourseIds[0]).toStrictEqual(
+      completedCourse._id,
+    );
+    expect(searchedUser.student.activeCourseIds.length).toBe(1);
+    expect(searchedUser.student.completedCourseIds.length).toBe(1);
+    expect(searchedUser.student.activeCourseIds[0]).toStrictEqual(
+      activeCourse._id,
+    );
+    expect(searchedUser.student.completedCourseIds[0]).toStrictEqual(
+      completedCourse._id,
+    );
+  });
+
+  it('should return the user with teacher details', async () => {
+    // Arrange
+    const user = RandomUserDTOStub();
+    const teacherDetails = RandomTeacherDTOStub();
+
+    // Act
+    const createdUser = (await service.create(user)) as UserDocument;
+    const updatedUser = await service.addTeacherDetails(
+      createdUser._id,
+      teacherDetails,
+    );
+    await new Promise((r) => setTimeout(r, 5)); // waiting a bit to let course.save() impact in DB.
+    const searchedUser = (await service.findOne(
+      createdUser._id,
+    )) as UserDocument;
+
+    // Assert
+    expect(updatedUser.teacher.title).toBe(teacherDetails.title);
+    expect(searchedUser.teacher.title).toBe(teacherDetails.title);
+  });
+
 });

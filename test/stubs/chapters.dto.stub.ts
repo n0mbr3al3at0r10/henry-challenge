@@ -20,6 +20,6 @@ export const ChapterDTOStubs = (): CreateChapterDto[] => {
   ];
 };
 
-export const RandomCourseDTOStub = (): CreateChapterDto => {
+export const RandomChapterDTOStub = (): CreateChapterDto => {
   return ChapterDTOStubs()[Math.floor(Math.random() * ChapterDTOStubs.length)];
 };
