@@ -75,9 +75,6 @@
     "coveragePathIgnorePatterns": [
       ".module.ts"
     ],
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/$1"
-    }
+    "testEnvironment": "node"
   }
 }

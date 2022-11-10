@@ -5,7 +5,7 @@ import { Request } from 'express';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course, CourseDocument } from './schemas/course.schema';
-import { User } from 'src/users/schemas/user.schema';
+import { User } from '../../src/users/schemas/user.schema';
 import { CreateChapterDto } from './dto/create-chapter.dto';
 import { CreateRankingDto } from './dto/create-ranking.dto';
 

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Course } from 'src/courses/schemas/course.schema';
+import { Course } from '../../../src/courses/schemas/course.schema';
 export class CreateStudentDto {
   @ApiProperty({
     example: ['6364778c8cba791005e71785'],

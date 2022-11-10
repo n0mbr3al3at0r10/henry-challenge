@@ -8,7 +8,7 @@ import { Request } from 'express';
 import { Student } from './schemas/student.schema';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
-import { Course } from 'src/courses/schemas/course.schema';
+import { Course } from '../../src/courses/schemas/course.schema';
 
 @Injectable()
 export class UsersService {
