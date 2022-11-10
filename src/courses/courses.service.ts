@@ -49,7 +49,7 @@ export class CoursesService {
     const course: CourseDocument = await this.courseModel.findById(id);
     course.teacherId = teacherId;
     course.save();
-    return course.populate({ path: 'teacherId' }); // matches with userId in User and displays its details.
+    return course.populate('teacherId'); // matches with userId in User and displays its details.
   }
 
   async addChapter(id: string, chapter: CreateChapterDto) {
