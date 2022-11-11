@@ -239,4 +239,191 @@ describe('StudentDetails, TeacherDetails and Courses in progress/completed', () 
     expect(searchedUser.teacher.title).toBe(teacherDetails.title);
   });
 
+  it('should return the user with active course', async () => {
+    // Arrange
+    const user = RandomUserDTOStub();
+
+    // Act
+    // Need to use CourseService in order to get course ids.
+    const [course] = await Promise.all([
+      courseService.create(RandomCourseDTOStub()) as Promise<CourseDocument>,
+    ]);
+
+    const createdUser = (await service.create(user)) as UserDocument;
+    const updatedUser = await service.addStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const searchedUser = (await service.findOne(
+      createdUser._id,
+    )) as UserDocument;
+
+    // Assert
+    expect(updatedUser.student.activeCourseIds.length).toBe(1);
+    expect(updatedUser.student.completedCourseIds.length).toBe(0);
+    expect(updatedUser.student.activeCourseIds[0]).toStrictEqual(course._id);
+    expect(searchedUser.student.activeCourseIds.length).toBe(1);
+    expect(searchedUser.student.completedCourseIds.length).toBe(0);
+    expect(searchedUser.student.activeCourseIds[0]).toStrictEqual(course._id);
+  });
+
+  it('should return the user with one active course when duplicated', async () => {
+    // Arrange
+    const user = RandomUserDTOStub();
+
+    // Act
+    // Need to use CourseService in order to get course ids.
+    const [course] = await Promise.all([
+      courseService.create(RandomCourseDTOStub()) as Promise<CourseDocument>,
+    ]);
+
+    const createdUser = (await service.create(user)) as UserDocument;
+    const updatedUserBeforeDuplication = await service.addStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const updatedUserAfterDuplication = await service.addStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const searchedUser = (await service.findOne(
+      createdUser._id,
+    )) as UserDocument;
+
+    // Assert
+    expect(updatedUserBeforeDuplication.student.activeCourseIds.length).toBe(1);
+    expect(updatedUserBeforeDuplication.student.completedCourseIds.length).toBe(
+      0,
+    );
+    expect(
+      updatedUserBeforeDuplication.student.activeCourseIds[0],
+    ).toStrictEqual(course._id);
+    expect(updatedUserAfterDuplication.student.activeCourseIds.length).toBe(1);
+    expect(updatedUserAfterDuplication.student.completedCourseIds.length).toBe(
+      0,
+    );
+    expect(
+      updatedUserAfterDuplication.student.activeCourseIds[0],
+    ).toStrictEqual(course._id);
+    expect(searchedUser.student.activeCourseIds.length).toBe(1);
+    expect(searchedUser.student.completedCourseIds.length).toBe(0);
+    expect(searchedUser.student.activeCourseIds[0]).toStrictEqual(course._id);
+  });
+
+  it('should return the user with completed course', async () => {
+    // Arrange
+    const user = RandomUserDTOStub();
+
+    // Act
+    // Need to use CourseService in order to get course ids.
+    const [course] = await Promise.all([
+      courseService.create(RandomCourseDTOStub()) as Promise<CourseDocument>,
+    ]);
+
+    const createdUser = (await service.create(user)) as UserDocument;
+    const updatedUserBeforeCompletion = await service.addStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const updatedUserAfterCompletion = await service.completeStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const searchedUser = (await service.findOne(
+      createdUser._id,
+    )) as UserDocument;
+
+    // Assert
+    expect(updatedUserBeforeCompletion.student.activeCourseIds.length).toBe(1);
+    expect(updatedUserBeforeCompletion.student.completedCourseIds.length).toBe(
+      0,
+    );
+    expect(
+      updatedUserBeforeCompletion.student.activeCourseIds[0],
+    ).toStrictEqual(course._id);
+    expect(updatedUserAfterCompletion.student.activeCourseIds.length).toBe(0);
+    expect(updatedUserAfterCompletion.student.completedCourseIds.length).toBe(
+      1,
+    );
+    expect(
+      updatedUserAfterCompletion.student.completedCourseIds[0],
+    ).toStrictEqual(course._id);
+    expect(searchedUser.student.activeCourseIds.length).toBe(0);
+    expect(searchedUser.student.completedCourseIds.length).toBe(1);
+    expect(searchedUser.student.completedCourseIds[0]).toStrictEqual(
+      course._id,
+    );
+  });
+
+  it('should return the user without completed course if not active course first', async () => {
+    // Arrange
+    const user = RandomUserDTOStub();
+
+    // Act
+    // Need to use CourseService in order to get course ids.
+    const [course] = await Promise.all([
+      courseService.create(RandomCourseDTOStub()) as Promise<CourseDocument>,
+    ]);
+
+    const createdUser = (await service.create(user)) as UserDocument;
+    const updatedUser = await service.completeStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const searchedUser = (await service.findOne(
+      createdUser._id,
+    )) as UserDocument;
+
+    // Assert
+    expect(updatedUser.student.activeCourseIds.length).toBe(0);
+    expect(updatedUser.student.completedCourseIds.length).toBe(0);
+    expect(searchedUser.student.activeCourseIds.length).toBe(0);
+    expect(searchedUser.student.completedCourseIds.length).toBe(0);
+  });
+
+  it('should return the user with one completed course when duplicated', async () => {
+    // Arrange
+    const user = RandomUserDTOStub();
+
+    // Act
+    // Need to use CourseService in order to get course ids.
+    const [course] = await Promise.all([
+      courseService.create(RandomCourseDTOStub()) as Promise<CourseDocument>,
+    ]);
+
+    const createdUser = (await service.create(user)) as UserDocument;
+    await service.addStartedCourse(createdUser._id, course._id);
+    const updatedUserBeforeDuplication = await service.completeStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const updatedUserAfterDuplication = await service.completeStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const searchedUser = (await service.findOne(
+      createdUser._id,
+    )) as UserDocument;
+
+    // Assert
+    expect(updatedUserBeforeDuplication.student.activeCourseIds.length).toBe(0);
+    expect(updatedUserBeforeDuplication.student.completedCourseIds.length).toBe(
+      1,
+    );
+    expect(
+      updatedUserBeforeDuplication.student.completedCourseIds[0],
+    ).toStrictEqual(course._id);
+    expect(updatedUserAfterDuplication.student.activeCourseIds.length).toBe(0);
+    expect(updatedUserAfterDuplication.student.completedCourseIds.length).toBe(
+      1,
+    );
+    expect(
+      updatedUserAfterDuplication.student.completedCourseIds[0],
+    ).toStrictEqual(course._id);
+    expect(searchedUser.student.activeCourseIds.length).toBe(0);
+    expect(searchedUser.student.completedCourseIds.length).toBe(1);
+    expect(searchedUser.student.completedCourseIds[0]).toStrictEqual(
+      course._id,
+    );
+  });
 });
