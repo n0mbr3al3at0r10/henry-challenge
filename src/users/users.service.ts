@@ -8,7 +8,10 @@ import { Request } from 'express';
 import { Student } from './schemas/student.schema';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
-import { Course } from 'src/courses/schemas/course.schema';
+import {
+  Course,
+  CourseDocument,
+} from '../../src/courses/schemas/course.schema';
 
 @Injectable()
 export class UsersService {
@@ -57,8 +60,8 @@ export class UsersService {
 
   async addStartedCourse(id: string, courseId: Course) {
     const user: UserDocument = await this.userModel.findById(id);
-    this.checkOrCreateStudent(user.student);
-    this.checkOrCreateActiveCourse(user.student, courseId);
+    this.checkOrCreateStudent(user);
+    this.checkOrCreateActiveCourse(user, courseId);
     return this.userModel.findByIdAndUpdate(id, user, {
       new: true,
     });
@@ -66,49 +69,65 @@ export class UsersService {
 
   async completeStartedCourse(id: string, courseId: Course) {
     const user: UserDocument = await this.userModel.findById(id);
-    this.checkOrCreateStudent(user.student);
-    this.checkOrCompleteActiveCourse(user.student, courseId);
+    this.checkOrCreateStudent(user);
+    this.checkOrCompleteActiveCourse(user, courseId);
     return this.userModel.findByIdAndUpdate(id, user, {
       new: true,
     });
   }
 
-  checkOrCreateStudent(student: Student) {
+  checkOrCreateStudent(user: UserDocument) {
     // Validations.
-    if (student) {
+    if (user.student) {
       return;
     }
 
     // Actions.
-    student = new Student();
+    user.student = new Student();
   }
 
-  checkOrCreateActiveCourse(student: Student, courseId: Course) {
+  checkOrCreateActiveCourse(user: UserDocument, courseId: Course) {
     // Validations.
-    if (student.activeCourseIds.includes(courseId)) {
+    if (
+      user.student.activeCourseIds.some((course) =>
+        (course as CourseDocument).equals(courseId as CourseDocument),
+      )
+    ) {
       return;
     }
 
     // Actions.
     // User can start watching a course again after it's already completed.
-    if (student.completedCourseIds.includes(courseId)) {
-      this.removeElementFromArray(student.completedCourseIds, courseId);
+    if (
+      user.student.completedCourseIds.some((course) =>
+        (course as CourseDocument).equals(courseId as CourseDocument),
+      )
+    ) {
+      this.removeElementFromArray(user.student.completedCourseIds, courseId);
     }
-    student.activeCourseIds.push(courseId);
+    user.student.activeCourseIds.push(courseId);
   }
 
-  checkOrCompleteActiveCourse(student: Student, courseId: Course) {
+  checkOrCompleteActiveCourse(user: UserDocument, courseId: Course) {
     // Validations.
-    if (!student.activeCourseIds.includes(courseId)) {
+    if (
+      user.student.completedCourseIds.some((course) =>
+        (course as CourseDocument).equals(courseId as CourseDocument),
+      )
+    ) {
       return;
     }
-    if (student.completedCourseIds.includes(courseId)) {
+    if (
+      !user.student.activeCourseIds.some((course) =>
+        (course as CourseDocument).equals(courseId as CourseDocument),
+      )
+    ) {
       return;
     }
 
     // Actions.
-    this.removeElementFromArray(student.activeCourseIds, courseId);
-    student.completedCourseIds.push(courseId);
+    this.removeElementFromArray(user.student.activeCourseIds, courseId);
+    user.student.completedCourseIds.push(courseId);
   }
 
   removeElementFromArray(arrayElements: any[], element: any) {

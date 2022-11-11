@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from 'src/users/schemas/user.schema';
+import { User } from '../../../src/users/schemas/user.schema';
 export class CreateRankingDto {
   @ApiProperty({
     example: '6364778c8cba791005e71785',

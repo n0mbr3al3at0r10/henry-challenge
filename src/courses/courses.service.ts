@@ -5,7 +5,7 @@ import { Request } from 'express';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course, CourseDocument } from './schemas/course.schema';
-import { User } from 'src/users/schemas/user.schema';
+import { User } from '../../src/users/schemas/user.schema';
 import { CreateChapterDto } from './dto/create-chapter.dto';
 import { CreateRankingDto } from './dto/create-ranking.dto';
 
@@ -49,7 +49,7 @@ export class CoursesService {
     const course: CourseDocument = await this.courseModel.findById(id);
     course.teacherId = teacherId;
     course.save();
-    return course.populate({ path: 'teacherId' }); // matches with userId in User and displays its details.
+    return course.populate('teacherId'); // matches with userId in User and displays its details.
   }
 
   async addChapter(id: string, chapter: CreateChapterDto) {

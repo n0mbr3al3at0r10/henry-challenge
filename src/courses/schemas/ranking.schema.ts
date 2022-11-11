@@ -1,6 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { User } from 'src/users/schemas/user.schema';
+import { User } from '../../../src/users/schemas/user.schema';
 
 export type RankingDocument = Ranking & Document;
 
