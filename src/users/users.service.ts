@@ -98,7 +98,11 @@ export class UsersService {
 
     // Actions.
     // User can start watching a course again after it's already completed.
-    if (user.student.completedCourseIds.includes(courseId)) {
+    if (
+      user.student.completedCourseIds.some((course) =>
+        (course as CourseDocument).equals(courseId as CourseDocument),
+      )
+    ) {
       this.removeElementFromArray(user.student.completedCourseIds, courseId);
     }
     user.student.activeCourseIds.push(courseId);
@@ -107,14 +111,14 @@ export class UsersService {
   checkOrCompleteActiveCourse(user: UserDocument, courseId: Course) {
     // Validations.
     if (
-      !user.student.activeCourseIds.some((course) =>
+      user.student.completedCourseIds.some((course) =>
         (course as CourseDocument).equals(courseId as CourseDocument),
       )
     ) {
       return;
     }
     if (
-      user.student.completedCourseIds.some((course) =>
+      !user.student.activeCourseIds.some((course) =>
         (course as CourseDocument).equals(courseId as CourseDocument),
       )
     ) {

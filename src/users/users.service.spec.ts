@@ -426,4 +426,56 @@ describe('StudentDetails, TeacherDetails and Courses in progress/completed', () 
       course._id,
     );
   });
+
+  it('should return the user with one active course after having it completed', async () => {
+    // Arrange
+    const user = RandomUserDTOStub();
+
+    // Act
+    // Need to use CourseService in order to get course ids.
+    const [course] = await Promise.all([
+      courseService.create(RandomCourseDTOStub()) as Promise<CourseDocument>,
+    ]);
+
+    const createdUser = (await service.create(user)) as UserDocument;
+    const updatedUserBeforeCompletion = await service.addStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const updatedUserAfterCompletion = await service.completeStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const updatedUserAfterRestart = await service.addStartedCourse(
+      createdUser._id,
+      course._id,
+    );
+    const searchedUser = (await service.findOne(
+      createdUser._id,
+    )) as UserDocument;
+
+    // Assert
+    expect(updatedUserBeforeCompletion.student.activeCourseIds.length).toBe(1);
+    expect(updatedUserBeforeCompletion.student.completedCourseIds.length).toBe(
+      0,
+    );
+    expect(
+      updatedUserBeforeCompletion.student.activeCourseIds[0],
+    ).toStrictEqual(course._id);
+    expect(updatedUserAfterCompletion.student.activeCourseIds.length).toBe(0);
+    expect(updatedUserAfterCompletion.student.completedCourseIds.length).toBe(
+      1,
+    );
+    expect(
+      updatedUserAfterCompletion.student.completedCourseIds[0],
+    ).toStrictEqual(course._id);
+    expect(updatedUserAfterRestart.student.activeCourseIds.length).toBe(1);
+    expect(updatedUserAfterRestart.student.completedCourseIds.length).toBe(0);
+    expect(updatedUserAfterRestart.student.activeCourseIds[0]).toStrictEqual(
+      course._id,
+    );
+    expect(searchedUser.student.activeCourseIds.length).toBe(1);
+    expect(searchedUser.student.completedCourseIds.length).toBe(0);
+    expect(searchedUser.student.activeCourseIds[0]).toStrictEqual(course._id);
+  });
 });
