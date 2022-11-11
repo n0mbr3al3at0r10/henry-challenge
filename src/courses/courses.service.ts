@@ -36,27 +36,32 @@ export class CoursesService {
   }
 
   async update(id: string, course: UpdateCourseDto): Promise<Course> {
-    return this.courseModel.findOneAndUpdate({ _id: id }, course, {
-      new: true,
-    });
+    return this.courseModel
+      .findOneAndUpdate({ _id: id }, course, {
+        new: true,
+      })
+      .populate('teacherId', '-student'); // matches with userId in User and displays its details.
   }
 
   async remove(id: string) {
-    return this.courseModel.findByIdAndRemove({ _id: id }).exec();
+    return this.courseModel
+      .findByIdAndRemove({ _id: id })
+      .populate('teacherId', '-student') // matches with userId in User and displays its details.
+      .exec();
   }
 
   async assignTeacher(id: string, teacherId: User) {
     const course: CourseDocument = await this.courseModel.findById(id);
     course.teacherId = teacherId;
     course.save();
-    return course.populate('teacherId'); // matches with userId in User and displays its details.
+    return course.populate('teacherId', '-student'); // matches with userId in User and displays its details.
   }
 
   async addChapter(id: string, chapter: CreateChapterDto) {
     const course: CourseDocument = await this.courseModel.findById(id);
     course.chapters.push(chapter);
     course.save();
-    return course;
+    return course.populate('teacherId', '-student'); // matches with userId in User and displays its details.
   }
 
   async updateChapter(
@@ -65,17 +70,19 @@ export class CoursesService {
     chapter: CreateChapterDto,
   ): Promise<Course> {
     // Updating a subdocument generates a new id, so passing old id to have consistency.
-    return this.courseModel.findOneAndUpdate(
-      { _id: id, 'chapters._id': chapterId },
-      { $set: { 'chapters.$': { _id: chapterId, ...chapter } } },
-      { new: true },
-    );
+    return this.courseModel
+      .findOneAndUpdate(
+        { _id: id, 'chapters._id': chapterId },
+        { $set: { 'chapters.$': { _id: chapterId, ...chapter } } },
+        { new: true },
+      )
+      .populate('teacherId', '-student'); // matches with userId in User and displays its details.
   }
 
   async addRanking(id: string, ranking: CreateRankingDto) {
     const course: CourseDocument = await this.courseModel.findById(id);
     course.rankings.push(ranking);
     course.save();
-    return course;
+    return course.populate('teacherId', '-student'); // matches with userId in User and displays its details.
   }
 }
