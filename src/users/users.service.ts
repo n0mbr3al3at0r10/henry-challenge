@@ -57,8 +57,8 @@ export class UsersService {
 
   async addStartedCourse(id: string, courseId: Course) {
     const user: UserDocument = await this.userModel.findById(id);
-    this.checkOrCreateStudent(user.student);
-    this.checkOrCreateActiveCourse(user.student, courseId);
+    this.checkOrCreateStudent(user);
+    this.checkOrCreateActiveCourse(user, courseId);
     return this.userModel.findByIdAndUpdate(id, user, {
       new: true,
     });
@@ -66,49 +66,49 @@ export class UsersService {
 
   async completeStartedCourse(id: string, courseId: Course) {
     const user: UserDocument = await this.userModel.findById(id);
-    this.checkOrCreateStudent(user.student);
-    this.checkOrCompleteActiveCourse(user.student, courseId);
+    this.checkOrCreateStudent(user);
+    this.checkOrCompleteActiveCourse(user, courseId);
     return this.userModel.findByIdAndUpdate(id, user, {
       new: true,
     });
   }
 
-  checkOrCreateStudent(student: Student) {
+  checkOrCreateStudent(user: UserDocument) {
     // Validations.
-    if (student) {
+    if (user.student) {
       return;
     }
 
     // Actions.
-    student = new Student();
+    user.student = new Student();
   }
 
-  checkOrCreateActiveCourse(student: Student, courseId: Course) {
+  checkOrCreateActiveCourse(user: UserDocument, courseId: Course) {
     // Validations.
-    if (student.activeCourseIds.includes(courseId)) {
+    if (user.student.activeCourseIds.includes(courseId)) {
       return;
     }
 
     // Actions.
     // User can start watching a course again after it's already completed.
-    if (student.completedCourseIds.includes(courseId)) {
-      this.removeElementFromArray(student.completedCourseIds, courseId);
+    if (user.student.completedCourseIds.includes(courseId)) {
+      this.removeElementFromArray(user.student.completedCourseIds, courseId);
     }
-    student.activeCourseIds.push(courseId);
+    user.student.activeCourseIds.push(courseId);
   }
 
-  checkOrCompleteActiveCourse(student: Student, courseId: Course) {
+  checkOrCompleteActiveCourse(user: UserDocument, courseId: Course) {
     // Validations.
-    if (!student.activeCourseIds.includes(courseId)) {
+    if (!user.student.activeCourseIds.includes(courseId)) {
       return;
     }
-    if (student.completedCourseIds.includes(courseId)) {
+    if (user.student.completedCourseIds.includes(courseId)) {
       return;
     }
 
     // Actions.
-    this.removeElementFromArray(student.activeCourseIds, courseId);
-    student.completedCourseIds.push(courseId);
+    this.removeElementFromArray(user.student.activeCourseIds, courseId);
+    user.student.completedCourseIds.push(courseId);
   }
 
   removeElementFromArray(arrayElements: any[], element: any) {
