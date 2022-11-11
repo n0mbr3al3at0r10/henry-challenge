@@ -8,7 +8,10 @@ import { Request } from 'express';
 import { Student } from './schemas/student.schema';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
-import { Course } from '../../src/courses/schemas/course.schema';
+import {
+  Course,
+  CourseDocument,
+} from '../../src/courses/schemas/course.schema';
 
 @Injectable()
 export class UsersService {
@@ -85,7 +88,11 @@ export class UsersService {
 
   checkOrCreateActiveCourse(user: UserDocument, courseId: Course) {
     // Validations.
-    if (user.student.activeCourseIds.includes(courseId)) {
+    if (
+      user.student.activeCourseIds.some((course) =>
+        (course as CourseDocument).equals(courseId as CourseDocument),
+      )
+    ) {
       return;
     }
 
@@ -99,10 +106,18 @@ export class UsersService {
 
   checkOrCompleteActiveCourse(user: UserDocument, courseId: Course) {
     // Validations.
-    if (!user.student.activeCourseIds.includes(courseId)) {
+    if (
+      !user.student.activeCourseIds.some((course) =>
+        (course as CourseDocument).equals(courseId as CourseDocument),
+      )
+    ) {
       return;
     }
-    if (user.student.completedCourseIds.includes(courseId)) {
+    if (
+      user.student.completedCourseIds.some((course) =>
+        (course as CourseDocument).equals(courseId as CourseDocument),
+      )
+    ) {
       return;
     }
 
