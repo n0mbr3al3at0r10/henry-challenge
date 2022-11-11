@@ -1,4 +1,4 @@
-import { CreateCourseDto } from '../../src/courses/dto/create-course.dto';
+import { CreateCourseDto } from 'src/courses/dto/create-course.dto';
 
 export const CourseDTOStubs = (): CreateCourseDto[] => {
   return [

@@ -10,13 +10,13 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
-import { ParseObjectIdPipe } from '../../src/utilities/parse-object-id-pipe.pipe';
+import { ParseObjectIdPipe } from 'src/utilities/parse-object-id-pipe.pipe';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
-import { Course } from '../../src/courses/schemas/course.schema';
+import { Course } from 'src/courses/schemas/course.schema';
 
 @Controller('users')
 @ApiTags('user')

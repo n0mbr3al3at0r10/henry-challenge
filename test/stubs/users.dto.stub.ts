@@ -1,4 +1,4 @@
-import { CreateUserDto } from '../../src/users/dto/create-user.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 export const UserDTOStubs = (): CreateUserDto[] => {
   return [

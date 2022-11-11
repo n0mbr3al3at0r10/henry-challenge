@@ -12,12 +12,8 @@ import { ChapterDTOStubs } from '../../test/stubs/chapters.dto.stub';
 import { CoursesService } from './courses.service';
 import { Course, CourseDocument, CourseSchema } from './schemas/course.schema';
 import { UpdateCourseDto } from './dto/update-course.dto';
-import {
-  User,
-  UserDocument,
-  UserSchema,
-} from '../../src/users/schemas/user.schema';
-import { UsersService } from '../../src/users/users.service';
+import { User, UserDocument, UserSchema } from 'src/users/schemas/user.schema';
+import { UsersService } from 'src/users/users.service';
 import { ChapterDocument } from './schemas/chapter.schema';
 import { CreateRankingDto } from './dto/create-ranking.dto';
 

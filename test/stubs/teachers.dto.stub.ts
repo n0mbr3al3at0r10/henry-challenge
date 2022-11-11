@@ -1,4 +1,4 @@
-import { CreateTeacherDto } from '../../src/users/dto/create-teacher.dto';
+import { CreateTeacherDto } from 'src/users/dto/create-teacher.dto';
 
 export const TeacherDTOStubs = (): CreateTeacherDto[] => {
   return [

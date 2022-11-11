@@ -1,4 +1,4 @@
-import { CreateChapterDto } from '../../src/courses/dto/create-chapter.dto';
+import { CreateChapterDto } from 'src/courses/dto/create-chapter.dto';
 
 export const ChapterDTOStubs = (): CreateChapterDto[] => {
   return [
