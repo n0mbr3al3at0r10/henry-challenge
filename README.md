@@ -46,7 +46,7 @@ $ http://localhost:3000/docs-json
 ```
 
 ## Database Diagram
-![Diagram](data/database-diagram.png "Diagram")
+![Diagram](data/database-diagram.jpg "Diagram")
 
 ## Concerns
 - Completed chapters in active courses are not being tracked.
